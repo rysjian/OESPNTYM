@@ -15,7 +15,7 @@ struct WizardData {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // Скачиваем файл
-    let url = "http://bit.ly/liwizard";
+    let url = "http://bit.ly/lidwizard";
     let response = reqwest::get(url).await?;
     
     // Парсим JSON прямо из ответа
