@@ -1,5 +1,7 @@
 FROM alpine:latest
-RUN wget -c -t 0 --timeout=60 --waitretry=60 -O vscode-linux-arm64.tar.gz "https://code.visualstudio.com/sha/download?build=stable&os=linux-arm64"
-RUN tar -xzf vscode-linux-arm64.tar.gz
-RUN cp VSCode-linux-arm64 /
+RUN wget -c -t 0 --timeout=60 --waitretry=60 -O vscode.tar.gz "https://code.visualstudio.com/sha/download?build=stable&os=linux-arm64"
+RUN tar -xzf vscode.tar.gz -C /usr/local/
+RUN mv /usr/local/VSC* /usr/local/vscode
+RUN rm vscode.tar.gz
+ENV PATH="/usr/local/vscode/bin:${PATH}"
 ENTRYPOINT ["code"]
