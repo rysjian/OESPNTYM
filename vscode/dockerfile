@@ -2,4 +2,6 @@ FROM alpine:latest
 RUN apk add --no-cache libstdc++ nodejs npm curl git python3 make g++
 RUN curl -L -o vscode-cli.tar.gz "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-arm64" && tar -xzf vscode-cli.tar.gz && rm vscode-cli.tar.gz && mv code /usr/local/bin/
 RUN mkdir -p /root/.vscode
-ENTRYPOINT ["code", "serve-web", "--host", "0.0.0.0", "--port", "3000", "--without-connection-token"]
+RUN code --cli-data-dir /root/.vscode/data ext install 'asvetliakov.vscode-neovim@1.18.21' 'ms-dotnettools.dotnet-interactive-vscode@1.0.6264021' 'ms-dotnettools.csharp@2.78.15'
+#ENTRYPOINT ["code", "serve-web", "--host", "0.0.0.0", "--port", "3000", "--without-connection-token"]
+ENTRYPOINT ["code", "--cli-data-dir", "/root/.vscode/data", "--server-data-dir", "/root/.vscode/server", "--extensions-dir", "/root/.vscode/ext", "--name", "vsc"]
