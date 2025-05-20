@@ -1,5 +1,5 @@
 FROM alpine:latest
-RUN apk add --no-cache libstdc++
-RUN wget -O vscode.tar.gz "https://code.visualstudio.com/sha/download?build=stable&os=linux-arm64"
-RUN tar -xzf vscode.tar.gz && mv VSC* vscode
-ENTRYPOINT ["./vscode/bin/code"]
+RUN apk add --no-cache libstdc++ nodejs npm curl git python3 make g++
+RUN curl -L -o vscode-cli.tar.gz "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-arm64" && tar -xzf vscode-cli.tar.gz && rm vscode-cli.tar.gz && mv code /usr/local/bin/
+RUN mkdir -p /root/.vscode-server
+ENTRYPOINT ["code", "serve-local", "--host", "0.0.0.0", "--port", "3000", "--without-connection-token"]
