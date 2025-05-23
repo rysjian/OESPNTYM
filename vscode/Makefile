@@ -1,11 +1,19 @@
+DOCKER=sudo docker
+NAME=vsc2005
+PORT=-p 8080:8080
+DIR=/root/.vscode
+
 build:
-	sudo docker build -t vsc2005 .
+	$(DOCKER) build -t $(NAME) .
 
 tunnel:
-	sudo docker run --rm \
-		-v ~/projects:/workspace \
-		-v ~/.vscode:/root/.vscode \
-		-p 8080:8080 \
-		vsc2005 tunnel \
-		--name vsc20052025 \
-		--log warn > ./tunnel.log&
+	$(DOCKER) run --rm \
+		-v $$HOME/projects:/workspace \
+		-v $$HOME/.vscode:$(DIR) \
+		$(PORT) $(NAME) \
+		--cli-data-dir $(DIR)/cli \
+		--log error \
+		tunnel \
+		--name $(NAME)2025 \
+		--accept-server-license-terms \
+		> ./tunnel.log&
