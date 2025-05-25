@@ -1,0 +1,4 @@
+SocksPort 9050
+ControlPort 9051
+DataDirectory /var/lib/tor
+ClientTransportPlugin obfs4 exec /usr/local/bin/obfs4proxy

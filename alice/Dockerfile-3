@@ -1,0 +1,65 @@
+#1
+FROM	alpine:3.21.3 as tor-builder
+#2
+RUN	apk add --no-cache \
+	make \
+	automake \
+	autoconf \
+	libtool \
+        gcc \
+	musl-dev \
+	openssl-dev \
+	zlib-dev \
+        libevent-dev \
+	libevent-static
+#3
+COPY	tor-src.tar.gz /tmp/
+#4
+RUN	tar -xzf /tmp/tor-src.tar.gz -C /tmp/ && \
+	cd /tmp/tor-*
+#5
+RUN	./configure \
+        --prefix=/usr/local \
+        --enable-static-libevent \
+        --with-libevent-dir=/usr/lib \
+        LDFLAGS="-L/usr/lib"
+#6
+RUN	make -j$(nproc)
+#7
+RUN	make install DESTDIR=/tor-install
+#8
+FROM	golang:1.23.9-alpine3.21 as obfs4-builder
+#9
+ARG	TARGETARCH
+#10
+ENV	CGO_ENABLED=0 GOARCH=$TARGETARCH
+#11
+RUN	apk add --no-cache \
+	git
+#12
+RUN	git clone https://gitlab.com/yawning/obfs4.git && \
+	cd obfs4
+#13
+RUN	go build -o /obfs4proxy ./obfs4proxy
+#14
+FROM	alpine:3.21.3
+#15
+RUN	mkdir -p /etc/tor /var/lib/tor
+#16
+COPY	--from=tor-builder \
+	/tor-install/usr/local/ /usr/local/
+#17
+COPY	--from=obfs4-builder \
+	/obfs4proxy /usr/local/bin/
+#18
+RUN	apk add --no-cache \
+        libevent \
+	openssl \
+	zlib
+#19
+RUN	chown -R nobody:nobody /var/lib/tor && \
+	chmod 700 /var/lib/tor
+#20
+RUN	echo -e "SocksPort 9050\nControlPort 9051\nDataDirectory /var/lib/tor\nClientTransportPlugin obfs4 exec /usr/local/bin/obfs4proxy" > /etc/tor/torrc
+#21
+CMD ["tor", "-f", "/etc/tor/torrc"]

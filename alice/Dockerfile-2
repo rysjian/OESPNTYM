@@ -46,11 +46,10 @@ COPY --from=obfs4-builder /obfs4proxy /usr/local/bin/
 RUN apk add --no-cache \
         libevent openssl zlib
 
-#RUN chown -R nobody:nobody /var/lib/tor && \
-#    chmod 700 /var/lib/tor
-
+RUN chown -R nobody:nobody /var/lib/tor && \
+    chmod 700 /var/lib/tor
 
 # Configure Tor
-#RUN echo -e "SocksPort 9050\nControlPort 9051\nDataDirectory /var/lib/tor\nClientTransportPlugin obfs4 exec /usr/local/bin/obfs4proxy" > /etc/tor/torrc
+RUN echo -e "SocksPort 9050\nControlPort 9051\nDataDirectory /var/lib/tor\nClientTransportPlugin obfs4 exec /usr/local/bin/obfs4proxy" > /etc/tor/torrc
 
 CMD ["tor", "-f", "/etc/tor/torrc"]
